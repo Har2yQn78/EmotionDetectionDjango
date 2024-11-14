@@ -1,0 +1,10 @@
+Django
+joblib
+pandas
+numpy
+scikit-learn
+neattext
+matplotlib
+seaborn
+streamlit
+altair
