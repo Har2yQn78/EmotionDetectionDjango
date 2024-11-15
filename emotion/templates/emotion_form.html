@@ -1,21 +1,140 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>Emotion Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            text-align: center;
+            color: #5cb85c;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2c2c2c;
+            color: #fff;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #5cb85c;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 4px;
+            background-color: {{ color }};
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .result h2 {
+            margin-bottom: 10px;
+        }
+        .result p {
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Emotion Prediction</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Predict Emotion</button>
-    </form>
-    {% if label %}
-        <h2>Predicted Emotion: {{ label }}</h2>
-    {% endif %}
+    <div class="container">
+        <h1>Emotion Prediction</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if label %}
+        <div class="result">
+            <h2>Predicted Emotion: {{ label }}</h2>
+            <p>Confidence: {{ confidence }}%</p>
+            <canvas id="probChart" width="400" height="400"></canvas>
+        </div>
+        <script>
+            const ctx = document.getElementById('probChart').getContext('2d');
+            const data = {
+                labels: {{ probabilities.keys|safe }},
+                datasets: [{
+                    label: 'Probability',
+                    data: {{ probabilities.values|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white' // Y-axis labels color
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white' // X-axis labels color
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white' // Set legend color to white
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, config);
+        </script>
+        {% endif %}
+    </div>
 </body>
 </html>
