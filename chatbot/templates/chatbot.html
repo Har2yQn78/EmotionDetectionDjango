@@ -1,0 +1,80 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eliza Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c2f33;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            width: 50%;
+            margin: 50px auto;
+            background-color: #23272a;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .chat-box {
+            border: 1px solid #7289da;
+            border-radius: 8px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #2c2f33;
+            margin-bottom: 10px;
+        }
+        .chat-box div {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            color: #00b0f4;
+        }
+        .eliza-message {
+            color: #43b581;
+        }
+        .chat-form {
+            display: flex;
+        }
+        .chat-form textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #7289da;
+            border-radius: 4px;
+            background-color: #2c2f33;
+            color: #f0f0f0;
+        }
+        .chat-form button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #7289da;
+            color: #fff;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Eliza Chatbot</h1>
+        <div class="chat-box">
+            {% for message in chat_history %}
+                {% if message|startswith:'You' %}
+                    <div class="user-message">{{ message }}</div>
+                {% else %}
+                    <div class="eliza-message">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <form method="post" class="chat-form">
+            {% csrf_token %}
+            {{ form.text }}
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</body>
+</html>
